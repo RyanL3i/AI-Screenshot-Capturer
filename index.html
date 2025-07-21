@@ -1,0 +1,69 @@
+<body>
+  <div id="drag-region">
+    <div id="content">🧠 Press ⌘ + Enter to capture a screenshot</div>
+    <div id="response">Waiting for screenshot...</div>
+    <img id="thumb" />
+  </div>
+
+  <script>
+    const { ipcRenderer } = require("electron");
+
+    ipcRenderer.on("display-image", (event, path) => {
+      document.getElementById("thumb").src = path;
+      document.getElementById("response").textContent = "🧠 Analyzing with AI...";
+    });
+
+    ipcRenderer.on("display-response", (event, text) => {
+      document.getElementById("response").innerHTML = text
+        .replace(/\n\n/g, "<br><br>")
+        .replace(/\n/g, "<br>")
+        .replace(/• /g, "🔹 ");
+    });
+
+    ipcRenderer.on("display-error", (event, err) => {
+      document.getElementById("response").textContent = "❌ Error: " + err;
+    });
+  </script>
+
+  <style>
+    body {
+      background: rgba(255, 255, 255, 0.2);
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      user-select: none;
+    }
+
+    #drag-region {
+      -webkit-app-region: drag;
+      padding: 12px;
+    }
+
+    #response, #thumb {
+      -webkit-app-region: no-drag;
+    }
+
+    #content {
+      font-size: 18px;
+      color: #000;
+      margin-bottom: 12px;
+    }
+
+    #response {
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 12px;
+      border-radius: 10px;
+      color: #000;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    #thumb {
+      width: 140px;
+      margin-top: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+  </style>
+</body>
