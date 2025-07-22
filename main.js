@@ -1,6 +1,6 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
+const { app, BrowserWindow, globalShortcut } = require("electron");
 const path = require("path");
-const { exec } = require("child_process");
+const { spawn } = require("child_process");
 
 let win;
 let isVisible = true;
@@ -25,51 +25,36 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
-  // ⌘ + B: toggle overlay visibility
   globalShortcut.register("CommandOrControl+B", () => {
-    if (isVisible) {
-      win.hide();
-    } else {
-      win.show();
-    }
     isVisible = !isVisible;
+    isVisible ? win.show() : win.hide();
   });
 
-  // ⌘ + Enter: capture screenshot + GPT
   globalShortcut.register("CommandOrControl+Return", () => {
-  // Step 1: hide overlay
-  win.hide();
+    const capture = spawn("python3", ["capture_screenshot.py"]);
+    let screenshotPath = "";
 
-  setTimeout(() => {
-    // Step 2: capture screenshot
-    exec("python3 capture_screenshot.py", (err, stdout, stderr) => {
-      if (err) {
-        win.webContents.send("display-error", stderr || err.message);
-        win.show();
-        return;
-      }
+    capture.stdout.on("data", (data) => {
+      screenshotPath += data.toString().trim();
+    });
 
-      const screenshotPath = stdout.trim();
+    capture.on("close", () => {
       const resolvedPath = "file://" + path.resolve(screenshotPath);
-
-      // Step 3: show Electron window again IMMEDIATELY
       win.show();
-
-      // Step 4: show loading state + start GPT request
       win.webContents.send("display-image", resolvedPath);
 
-      exec(`python3 ai_vision.py "${screenshotPath}"`, (err, stdout, stderr) => {
-        if (err || stderr) {
-          win.webContents.send("display-error", stderr || err.message);
-        } else {
-          win.webContents.send("display-response", stdout);
-        }
-        // ❌ DO NOT hide/show here — already visible
+      const ai = spawn("python3", ["ai_vision.py", screenshotPath]);
+      ai.stdout.setEncoding("utf8");
+
+      ai.stdout.on("data", (chunk) => {
+        win.webContents.send("stream-chunk", chunk);
+      });
+
+      ai.stderr.on("data", (err) => {
+        win.webContents.send("display-error", err.toString());
       });
     });
-  }, 500); // ensure it's fully hidden for capture
-});
-
+  });
 });
 
 app.on("will-quit", () => {

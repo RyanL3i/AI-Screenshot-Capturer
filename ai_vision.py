@@ -2,6 +2,7 @@ import sys
 import base64
 import requests
 import os
+import json
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -30,6 +31,7 @@ headers = {
 
 data = {
     "model": "gpt-4o",
+    "stream": True,
     "messages": [
         {
             "role": "user",
@@ -39,23 +41,23 @@ This is a screenshot of a stock report, equity research document, or financial s
 
 ---
 
-1. **📊 Key Financial Highlights**
+📊 Key Financial Highlights**
    - Pull out any financial metrics visible (e.g., revenue, net income, earnings per share, margins).
    - Mention YoY or QoQ changes if visible.
    - Identify if the company beat/missed expectations.
 
-2. **📈 Company Performance Summary**
+📈 Company Performance Summary**
    - Describe whether the company is doing well, poorly, or mixed — and why.
    - Include commentary on trends like growth, profit, costs, etc.
 
-3. **🎯 Stock Rating & Outlook**
+🎯 Stock Rating & Outlook**
    - If visible, extract analyst rating (e.g., Buy, Hold, Sell), target price, or sentiment.
    - Note any risks, opportunities, or sector-wide headwinds/tailwinds.
 
-4. **✅ Actionable Insight for a Financial Analyst**
+✅ Actionable Insight for a Financial Analyst**
    - Suggest one or two quick takeaways for a financial services professional (e.g., flag for further review, compare to competitors, log into CRM, update client briefing, etc.).
 
-5. **💬 Simple Explanation (Plain English)**
+💬 Simple Explanation (Plain English)**
    - Translate the core message of the report into easy-to-understand terms, as if explaining to someone with no finance background.
    - Avoid jargon. Use analogies if helpful (e.g., "The company made more money than expected this quarter, mostly due to strong sales and keeping costs low.").
 
@@ -63,7 +65,6 @@ This is a screenshot of a stock report, equity research document, or financial s
 
 Keep your response concise, bulleted where possible, but without too many spaces between lines because right now there are
 and aimed at helping a busy employee quickly understand and act on this report. Assume this is part of an internal productivity assistant for employees at **StoneX**, a financial services firm.
-
 """},
 
                 {
@@ -78,25 +79,26 @@ and aimed at helping a busy employee quickly understand and act on this report. 
     "max_tokens": 1000
 }
 
-# Send request to OpenAI
-response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
-
-# Print formatted output
+# Stream the response from OpenAI
 try:
-    result = response.json()
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        headers=headers,
+        json=data,
+        stream=True
+    )
 
-    if "choices" in result and result["choices"]:
-        raw = result["choices"][0]["message"]["content"]
-        pretty = raw.strip()
-
-        # Improve formatting
-        pretty = pretty.replace("**", "")  # remove markdown bold
-        pretty = pretty.replace(" - ", "\n• ")  # make bullets
-        pretty = pretty.replace("\n", "\n\n")  # spacing between points
-
-        print(pretty)
-    else:
-        print("❌ Unexpected OpenAI response format", file=sys.stderr)
+    for line in response.iter_lines():
+        if line:
+            line = line.decode("utf-8").strip().replace("data: ", "")
+            if line == "[DONE]":
+                break
+            try:
+                delta = json.loads(line)["choices"][0]["delta"]
+                if "content" in delta:
+                    print(delta["content"], end="", flush=True)
+            except Exception:
+                continue
 
 except Exception as e:
-    print("❌ Failed to parse OpenAI response:", e, file=sys.stderr)
+    print("❌ Streaming failed:", e, file=sys.stderr)

@@ -13,11 +13,16 @@
       document.getElementById("response").textContent = "🧠 Analyzing with AI...";
     });
 
-    ipcRenderer.on("display-response", (event, text) => {
-      document.getElementById("response").innerHTML = text
+    let responseBox = document.getElementById("response");
+    responseBox.textContent = ""; // Reset output each time
+
+    ipcRenderer.on("stream-chunk", (event, chunk) => {
+      // Append each chunk with formatting
+      const htmlChunk = chunk
         .replace(/\n\n/g, "<br><br>")
         .replace(/\n/g, "<br>")
         .replace(/• /g, "🔹 ");
+      responseBox.innerHTML += htmlChunk;
     });
 
     ipcRenderer.on("display-error", (event, err) => {
@@ -50,12 +55,12 @@
     }
 
     #response {
-      font-size: 18px;
+      font-size: 12px;
       background: rgba(255, 255, 255, 0.6);
-      padding: 12px;
+      padding: 4px;
       border-radius: 10px;
       color: #000;
-      line-height: 1.5;
+      line-height: 1;
       white-space: pre-wrap;
     }
 
