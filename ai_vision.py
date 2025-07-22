@@ -35,31 +35,35 @@ data = {
             "role": "user",
             "content": [
                 {"type": "text", "text": """
-This screenshot was taken by an employee at StoneX Group as part of a company-wide effort to streamline workflows, reduce cognitive overhead, and improve day-to-day productivity across departments. Please analyze the screenshot and determine what the user is working on based on the visible applications, layout, content, and context.
+This is a screenshot of a stock report, equity research document, or financial summary. Please analyze the image and return a clear and structured breakdown with the following sections:
 
-Your response should include the following:
+---
 
-1. **Task Detection**  
-   Identify the task the user is likely performing. Be specific if possible (e.g., composing an email, reading a financial report, debugging code, entering client data, etc.). Identify what phase they are in (starting, mid-task, reviewing, copying, etc.).
+1. **📊 Key Financial Highlights**
+   - Pull out any financial metrics visible (e.g., revenue, net income, earnings per share, margins).
+   - Mention YoY or QoQ changes if visible.
+   - Identify if the company beat/missed expectations.
 
-2. **Context-Aware Insight & Friction Points**  
-   Point out any inefficiencies or pain points — such as manual data entry, switching between tools or browser tabs, keeping temporary information in memory, or unclear UI. Mention any signs the user is juggling multiple pieces of information or may forget something.
+2. **📈 Company Performance Summary**
+   - Describe whether the company is doing well, poorly, or mixed — and why.
+   - Include commentary on trends like growth, profit, costs, etc.
 
-3. **Memory Support & Tracking Suggestions**  
-   Describe how this user could benefit from automated memory aids — like reminders, AI-generated summaries, inline assistants, or context-aware overlays that help them keep track of names, numbers, links, instructions, etc.
+3. **🎯 Stock Rating & Outlook**
+   - If visible, extract analyst rating (e.g., Buy, Hold, Sell), target price, or sentiment.
+   - Note any risks, opportunities, or sector-wide headwinds/tailwinds.
 
-4. **Smart AI Productivity Boosters — Based on What You See**  
-   Based on the content type in the screenshot, apply the following logic:
-   - **If you see an article, PDF, or webpage:** summarize the key points and suggest how the user could automate follow-up (e.g., “add to reading list,” “extract insights,” “track related documents”).
-   - **If you see code or a terminal window:** explain what the code does, and suggest improvements or shortcuts (e.g., automation, linting, version control).
-   - **If you see email or messaging apps:** suggest how to draft a response, prioritize items, or convert tasks into action steps.
-   - **If you see dashboards, charts, or Excel files:** provide a high-level summary of what’s shown and suggest relevant trends, anomalies, or possible alerts.
-   - **If it’s a form, database, or internal system:** check if there are fields that look repetitive or could be autofilled or remembered.
+4. **✅ Actionable Insight for a Financial Analyst**
+   - Suggest one or two quick takeaways for a financial services professional (e.g., flag for further review, compare to competitors, log into CRM, update client briefing, etc.).
 
-5. **StoneX-Aware Suggestions**  
-   Tailor your suggestions with the understanding that this is a financial services firm. Be mindful of workflows in trading, operations, compliance, finance, and technology. Suggest automations that could enhance data accuracy, reduce time spent on routine tasks, or improve cross-tool visibility.
+5. **💬 Simple Explanation (Plain English)**
+   - Translate the core message of the report into easy-to-understand terms, as if explaining to someone with no finance background.
+   - Avoid jargon. Use analogies if helpful (e.g., "The company made more money than expected this quarter, mostly due to strong sales and keeping costs low.").
 
-Keep your response clear, actionable, and helpful — as if you're assisting the user live, in real time, by reducing mental load and helping them finish their task faster.
+---
+
+Keep your response concise, bulleted where possible, but without too many spaces between lines because right now there are
+and aimed at helping a busy employee quickly understand and act on this report. Assume this is part of an internal productivity assistant for employees at **StoneX**, a financial services firm.
+
 """},
 
                 {
