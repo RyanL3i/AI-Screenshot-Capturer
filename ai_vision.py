@@ -40,7 +40,11 @@ data = {
 This is a screenshot of a stock report, equity research document, or financial summary. Please analyze the image and return a clear and structured breakdown with the following sections:
 
 ---
-
+💬 Simple Explanation (Plain English)**
+   - Translate the core message of the report into easy-to-understand terms, as if explaining to someone with no finance background.
+   - Avoid jargon. Use analogies if helpful (e.g., "The company made more money than expected this quarter, mostly due to strong sales and keeping costs low.").
+                 
+                 
 📊 Key Financial Highlights**
    - Pull out any financial metrics visible (e.g., revenue, net income, earnings per share, margins).
    - Mention YoY or QoQ changes if visible.
@@ -56,10 +60,6 @@ This is a screenshot of a stock report, equity research document, or financial s
 
 ✅ Actionable Insight for a Financial Analyst**
    - Suggest one or two quick takeaways for a financial services professional (e.g., flag for further review, compare to competitors, log into CRM, update client briefing, etc.).
-
-💬 Simple Explanation (Plain English)**
-   - Translate the core message of the report into easy-to-understand terms, as if explaining to someone with no finance background.
-   - Avoid jargon. Use analogies if helpful (e.g., "The company made more money than expected this quarter, mostly due to strong sales and keeping costs low.").
 
 ---
 
